@@ -7,5 +7,6 @@ const userRoute = express.Router();
 
 userRoute.post('/', userValidation, userController.create);
 userRoute.get('/', tokenValidation, userController.getAll);
+userRoute.get('/:id', tokenValidation, userController.findByPk);
 
 module.exports = userRoute;
