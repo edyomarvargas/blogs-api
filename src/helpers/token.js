@@ -15,6 +15,7 @@ const createToken = (payload) => {
 
 const verifyToken = (token) => {
   const payload = jwt.verify(token, JWT_SECRET);
+  console.log('payload', payload);
   return payload;
 };
 
