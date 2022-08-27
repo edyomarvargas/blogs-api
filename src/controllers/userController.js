@@ -1,25 +1,25 @@
 const jwt = require('jsonwebtoken');
-const userServices = require('../services/userServices');
+const userService = require('../services/userService');
 
-const secret = process.env.JWT_SECRET;
-const INVALID_FIELDS_MSG = { message: 'Invalid fields' };
+const SECRET = process.env.JWT_SECRET;
+const JWT_CONFIG = {
+  expiresIn: '1d',
+  algorithm: 'HS256',
+};
 
-const login = async (req, res) => {
-  const { email, password } = req.body;
+const create = async (req, res) => {
+  const { displayName, email, password, image } = req.body;
 
-  const user = await userServices.login(email, password);
+  const findUser = await userService.getUserByEmail(email);
+  if (findUser) return res.status(409).json({ message: 'User already registered' });
 
-  if (!user) return res.status(400).json(INVALID_FIELDS_MSG);
+  await userService.create(displayName, email, password, image);
 
-  const jwtConfig = {
-    expiresIn: '1d',
-    algorithm: 'HS256',
-  };
-  const token = jwt.sign({ data: user }, secret, jwtConfig);
+  const token = jwt.sign({ displayName, email, image }, SECRET, JWT_CONFIG);
   
-  return res.status(200).json({ token });
+  return res.status(201).json({ token });
 };
 
 module.exports = {
-  login,
+  create,
 };
