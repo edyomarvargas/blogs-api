@@ -1,11 +1,5 @@
-const jwt = require('jsonwebtoken');
 const userService = require('../services/userService');
-
-const SECRET = process.env.JWT_SECRET;
-const JWT_CONFIG = {
-  expiresIn: '1d',
-  algorithm: 'HS256',
-};
+const tokenHelper = require('../helpers/token');
 
 const create = async (req, res) => {
   const { displayName, email, password, image } = req.body;
@@ -15,7 +9,7 @@ const create = async (req, res) => {
 
   await userService.create(displayName, email, password, image);
 
-  const token = jwt.sign({ displayName, email, image }, SECRET, JWT_CONFIG);
+  const token = tokenHelper.createToken({ displayName, email, image });
   
   return res.status(201).json({ token });
 };
