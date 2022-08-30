@@ -3,6 +3,7 @@ const { verifyToken } = require('../helpers/token');
 
 const MISSING_FIELDS_MSG = { message: 'Some required fields are missing' };
 const CATEGORYIDS_NOT_FOUND = { message: '"categoryIds" not found' };
+const POST_NOT_FOUND = { message: 'Post does not exist' };
 
 const getAll = async (req, res) => {
   const blogPosts = await postService.getAll();
@@ -14,8 +15,6 @@ const create = async (req, res) => {
 
   if (!title || !content || !categoryIds) return res.status(400).json(MISSING_FIELDS_MSG);
 
-  // if (categoryIds.length === 0) return res.status(400).json(CATEGORYIDS_NOT_FOUND);
-
   const payload = verifyToken(req.headers.authorization);
   
   const post = await postService.create({ title, content, categoryIds, email: payload.email });
@@ -25,7 +24,17 @@ const create = async (req, res) => {
   return res.status(201).json(post);
 };
 
+const findByPk = async (req, res) => {
+  const { id } = req.params;
+
+  const post = await postService.findByPk(id);
+
+  if (!post) return res.status(404).json(POST_NOT_FOUND);
+  return res.status(200).json(post);
+};
+
 module.exports = {
   getAll,
   create,
+  findByPk,
 };

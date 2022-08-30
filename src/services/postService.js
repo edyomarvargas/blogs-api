@@ -42,9 +42,21 @@ const create = async ({ title, content, categoryIds, email }) => {
 
   const post = await BlogPost.create({ title, content, userId });
 
-  categoryIds.forEach(async (id) => { 
+  categoryIds.forEach(async (id) => {
     await PostCategory.create({ postId: post.id, categoryId: id });
   });
+
+  return post;
+};
+
+const findByPk = async (id) => {
+  const post = await BlogPost.findByPk(id,
+    {
+      include: [
+        { model: User, as: 'user', attributes: { exclude: ['password'] } },
+        { model: Category, as: 'categories' },
+      ],
+    });
 
   return post;
 };
@@ -52,4 +64,5 @@ const create = async ({ title, content, categoryIds, email }) => {
 module.exports = {
   getAll,
   create,
+  findByPk,
 };
