@@ -72,9 +72,22 @@ const update = async ({ id, title, content }) => {
   return updatedPost;
 };
 
+const remove = async (id) => {
+  const result = await BlogPost.destroy(
+    {
+      where: {
+        id,
+      },
+    },
+    );
+
+  return result;
+};
+
 module.exports = {
   getAll,
   create,
   findByPk,
   update,
+  remove,
 };

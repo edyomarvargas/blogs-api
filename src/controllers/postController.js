@@ -54,9 +54,25 @@ const update = async (req, res) => {
   return res.status(200).json(updatedPost);
 };
 
+const remove = async (req, res) => {
+  const { id } = req.params;
+  const userData = verifyToken(req.headers.authorization);
+
+  const findPost = await postService.findByPk(id);
+  if (!findPost) return res.status(404).json(POST_NOT_FOUND);
+
+  const isUserValid = await validateUser(id, userData);
+  if (!isUserValid) return res.status(401).json(UNAUTHORIZED_USER_MSG);
+
+  await postService.remove(id);
+
+  return res.status(204).end();
+};
+
 module.exports = {
   getAll,
   create,
   findByPk,
   update,
+  remove,
 };
