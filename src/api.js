@@ -1,5 +1,6 @@
 const express = require('express');
 const routes = require('./routes');
+const { tokenValidation } = require('./middlewares/authentication');
 
 // ...
 const app = express();
@@ -9,7 +10,7 @@ app.use(express.json());
 app.use('/login', routes.loginRoute);
 app.use('/user', routes.userRoute);
 app.use('/categories', routes.categoryRoute);
-app.use('/post', routes.postRoute);
+app.use('/post', tokenValidation, routes.postRoute);
 
 // ...
 
