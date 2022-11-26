@@ -4,6 +4,7 @@ const { tokenValidation } = require('../middlewares/authentication');
 
 const postRoute = express.Router();
 
+postRoute.get('/search', tokenValidation, postController.search);
 postRoute.get('/', tokenValidation, postController.getAll);
 postRoute.get('/:id', tokenValidation, postController.findByPk);
 postRoute.post('/', tokenValidation, postController.create);

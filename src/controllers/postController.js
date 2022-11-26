@@ -69,10 +69,19 @@ const remove = async (req, res) => {
   return res.status(204).end();
 };
 
+const search = async (req, res) => {
+  const { q: query } = req.query;
+
+  const queryResult = await postService.search(query);
+
+  return res.status(200).json(queryResult);
+};
+
 module.exports = {
   getAll,
   create,
   findByPk,
   update,
   remove,
+  search,
 };

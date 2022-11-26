@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const { BlogPost, User, Category, PostCategory } = require('../database/models');
 const { getUserByEmail } = require('./userService');
 
@@ -84,10 +85,30 @@ const remove = async (id) => {
   return result;
 };
 
+// consultei o seguinte link sobre os operadores no sequelize:
+// https://sequelize.org/docs/v6/core-concepts/model-querying-basics/
+const search = (query) => {
+  const queryResult = BlogPost.findAll({
+    where: {
+      [Op.or]: [
+        { title: { [Op.like]: `%${query}%` } },
+        { content: { [Op.like]: `%${query}%` } },
+      ],
+    },
+    include: [
+      { model: User, as: 'user', attributes: { exclude: ['password'] } },
+      { model: Category, as: 'categories', through: { attributes: [] } },
+    ],
+  });
+
+  return queryResult;
+};
+
 module.exports = {
   getAll,
   create,
   findByPk,
   update,
   remove,
+  search,
 };
