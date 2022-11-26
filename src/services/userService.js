@@ -21,9 +21,22 @@ const findByPk = async (id) => {
   return user;
 };
 
+const remove = async (id) => {
+  const result = await User.destroy(
+    {
+      where: {
+        id,
+      },
+    },
+    );
+
+  return result;
+};
+
 module.exports = {
   create,
   getUserByEmail,
   getAll,
   findByPk,
+  remove,
 };

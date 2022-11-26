@@ -29,8 +29,19 @@ const findByPk = async (req, res) => {
   return res.status(200).json(user);
 };
 
+const remove = async (req, res) => {
+  const { email: userEmail } = tokenHelper.verifyToken(req.headers.authorization);
+
+  const userData = await userService.getUserByEmail(userEmail);
+
+  await userService.remove(userData.dataValues.id);
+
+  return res.status(204).end();
+};
+
 module.exports = {
   create,
   getAll,
   findByPk,
+  remove,
 };
