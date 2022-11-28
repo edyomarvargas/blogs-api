@@ -11,12 +11,16 @@ Esse foi um dos projetos desenvolvidos como critério de avaliação do módulo 
   - [Sobre a aplicação](#sobre-a-aplicação)
   - [Tecnologias e bibliotecas utilizadas](#tecnologias-e-bibliotecas-utilizadas) 
   - [Instalando e rodando a aplicação](#instalando-e-rodando-a-aplicação) 
+  - [Documentação](#documentação)
   - [Código limpo](#código-limpo)
   
 ## Sobre a aplicação
 A aplicação utiliza o ORM Sequelize para se conectar com um banco de dados MySQL e gerenciar posts e usuários. É possível fazer login ou cadastrar um novo usuário, que poderá criar e buscar posts, além de editar e remover os posts criados por ele.
+<br><br>
 A aplicação utiliza a arquitetura MSC, que ajuda na organização, manutenção e escalabilidade do código.
+<br><br>
 Os inputs do usuários são validados nos middlewares, enquanto as regras de negócio são estabelecidas na camada Service.
+<br><br>
 Para fazer determinadas requisições à API é necessário estar logado. Para isso, a aplicação espera receber um token no header da requsição para autenticar o usuário e autorizar a requisição. Para mais detalhes sobre isso, veja a documentação.
 
   
@@ -41,6 +45,9 @@ Posteriormente, clone o repositório e execute os seguintes comandos na raiz do 
     npm install
     npm run dev
   ```
+  
+## Documentação
+Após instalar e rodar a aplicação, a documentação pode ser encontrada no endpoint `http://localhost:3000/documentation/`
   
 ### Sem Docker
 Para rodar a aplicação localmente, é necessário ter o Node.JS e o MySQL instalados na máquina. Também é necessário configurar as variáveis de ambiente (`.env`) para conectar ao MySQL local. Ver o aquivo `.env.example` para consultar as variáveis disponíveis.
