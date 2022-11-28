@@ -47,7 +47,7 @@ Posteriormente, clone o repositório e execute os seguintes comandos na raiz do 
   ```
   
 ## Documentação
-Após instalar e rodar a aplicação, a documentação pode ser encontrada no endpoint `http://localhost:3000/documentation/`
+A API foi documentada com a ferramenta <a href="https://swagger.io/">Swagger</a>. Após instalar e rodar a aplicação, a documentação pode ser encontrada no endpoint `http://localhost:3000/documentation/`
   
 ### Sem Docker
 Para rodar a aplicação localmente, é necessário ter o Node.JS e o MySQL instalados na máquina. Também é necessário configurar as variáveis de ambiente (`.env`) para conectar ao MySQL local. Ver o aquivo `.env.example` para consultar as variáveis disponíveis.
