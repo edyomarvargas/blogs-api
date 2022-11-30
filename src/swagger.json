@@ -239,6 +239,7 @@
         "summary": "Cadastra um novo post",
         "description": "Rota responsável por cadastrar um novo post",
         "tags": ["Post"],
+        "security": [{ "BearerAuth": [] }],
         "requestBody": {
           "content": {
             "application/json": {
@@ -289,6 +290,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"
@@ -425,6 +429,27 @@
             "required": true
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  }
+                },
+                "example": {
+                  "title": "Latest updates, August 1st",
+                  "content": "Novo conteudo de novo"
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -436,8 +461,28 @@
                     "$ref": "#/components/schemas/post"
                   },
                   "example": {
-                    "title": "How to become the world's best boss",
-                    "content": "Take notes from Michael Scott"
+                    "id": 2,
+                    "title": "Latest updates, August 1st",
+                    "content": "Novo conteudo de novo",
+                    "userId": 1,
+                    "published": "2011-08-01T19:58:00.000Z",
+                    "updated": "2022-11-30T01:26:23.000Z",
+                    "user": {
+                      "id": 1,
+                      "displayName": "Lewis Hamilton",
+                      "email": "lewishamilton@gmail.com",
+                      "image": "https://upload.wikimedia.org/wikipedia/commons/1/18/Lewis_Hamilton_2016_Malaysia_2.jpg"
+                    },
+                    "categories": [
+                      {
+                        "id": 2,
+                        "name": "Escola",
+                        "PostCategory": {
+                          "postId": 2,
+                          "categoryId": 2
+                        }
+                      }
+                    ]
                   }
                 }
               }
@@ -550,6 +595,7 @@
         "summary": "Cadastra uma nova categoria",
         "description": "Rota responsável por cadastrar uma nova categoria",
         "tags": ["Category"],
+        "security": [{ "BearerAuth": [] }],
         "requestBody": {
           "content": {
             "application/json": {
