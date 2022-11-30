@@ -1,5 +1,6 @@
 const userService = require('../services/userService');
 const tokenHelper = require('../helpers/token');
+const { getCorrectTokenFormat } = require('../helpers/formatToken');
 
 const INTERNAL_ERROR_MSG = { message: 'Internal Server Error' };
 
@@ -48,7 +49,8 @@ const findByPk = async (req, res) => {
 
 const remove = async (req, res) => {
   try {
-    const { email: userEmail } = tokenHelper.verifyToken(req.headers.authorization);
+    const token = getCorrectTokenFormat(req.headers.authorization);
+    const { email: userEmail } = tokenHelper.verifyToken(token);
   
     const userData = await userService.getUserByEmail(userEmail);
   

@@ -1,6 +1,7 @@
 const postService = require('../services/postService');
 const { verifyToken } = require('../helpers/token');
 const validateUser = require('../helpers/validateUser');
+const { getCorrectTokenFormat } = require('../helpers/formatToken');
 
 const MISSING_FIELDS_MSG = { message: 'Some required fields are missing' };
 const CATEGORYIDS_NOT_FOUND = { message: '"categoryIds" not found' };
@@ -21,8 +22,10 @@ const getAll = async (req, res) => {
 const create = async (req, res) => {
   try {
     const { title, content, categoryIds } = req.body;
+    console.log('aqui', req.headers.authorization);
   
-    const payload = verifyToken(req.headers.authorization);
+    const token = getCorrectTokenFormat(req.headers.authorization);
+    const payload = verifyToken(token);
     
     const post = await postService.create({ title, content, categoryIds, email: payload.email });
   
@@ -54,12 +57,12 @@ const update = async (req, res) => {
     const { id: postId } = req.params;
     const { title, content } = req.body;
   
-    const userData = verifyToken(req.headers.authorization);
+    const token = getCorrectTokenFormat(req.headers.authorization);
+    const userData = verifyToken(token);
   
     if (!title || !content) return res.status(400).json(MISSING_FIELDS_MSG);
   
     const isUserValid = await validateUser(postId, userData);
-  
     if (!isUserValid) return res.status(401).json(UNAUTHORIZED_USER_MSG);
   
     await postService.update({ id: postId, title, content });
@@ -76,7 +79,8 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
   try {
     const { id } = req.params;
-    const userData = verifyToken(req.headers.authorization);
+    const token = getCorrectTokenFormat(req.headers.authorization);
+    const userData = verifyToken(token);
   
     const findPost = await postService.findByPk(id);
     if (!findPost) return res.status(404).json(POST_NOT_FOUND);
