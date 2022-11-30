@@ -1,0 +1,804 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Blogs API",
+    "description": "API para produção de conteúdo de um blog",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Edyomar Vargas",
+      "email": "edyomar-vargas@hotmail.com"
+    }
+  },
+  "paths": {
+    "/user": {
+      "post": {
+        "summary": "Cadastra um novo usuário",
+        "description": "Rota responsável por cadastrar um novo usuário",
+        "tags": ["User"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/user"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkaXNwbGF5TmFtZSI6Ik1pY2hhZWwgU2NvdHQiLCJlbWFpbCI6Im1zY290dF9AZHVuZGVybWlmZmxpbi5jb20iLCJpbWFnZSI6Imh0dHA6Ly80LmJwLmJsb2dzcG90LmNvbS9fWUE1MGFkUS03dlEvUzFnZlJfNnVmcEkvQUFBQUFBQUFBQWsvMUVySkdnUldaRGcvUzQ1L2JyZXR0LnBuZyIsImlhdCI6MTY2OTU1MTkxNCwiZXhwIjoxNjY5NjM4MzE0fQ.Uo0i57Jsa3SVsvEtTtiTxjcftk6XOdOU4RjZruxzvKI"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "User already registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "message": "User already registered"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "summary": "Busca todos os usuários",
+        "description": "Rota responsável por buscar todos os usuários",
+        "tags": ["User"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "item": {
+                    "$ref": "#/components/schemas/user"
+                  },
+                  "example": [
+                    {
+                      "id": 1,
+                      "displayName": "Michael Scott",
+                      "email": "mscott@dundermifflin.com",
+                      "image": "https://www.google.com/url?sa=i&url=https%3A%2F%2Fslackmojis.com%2Femojis%2F5572-michael_scott&psig=AOvVaw1yxN_mPRdheZXdBTIoBLm7&ust=1669643691256000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCOifgsvBzvsCFQAAAAAdAAAAABAE"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "summary": "Busca um usuário por id",
+        "description": "Rota responsável por buscar um usuário pelo id",
+        "tags": ["User"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id do usuário que será buscado",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "item": {
+                    "$ref": "#/components/schemas/user"
+                  },
+                  "example": {
+                    "id": 1,
+                    "displayName": "Michael Scott",
+                    "email": "mscott@dundermifflin.com",
+                    "image": "https://www.google.com/url?sa=i&url=https%3A%2F%2Fslackmojis.com%2Femojis%2F5572-michael_scott&psig=AOvVaw1yxN_mPRdheZXdBTIoBLm7&ust=1669643691256000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCOifgsvBzvsCFQAAAAAdAAAAABAE"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User does not exist"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/user/me": {
+      "delete": {
+        "summary": "Remove o usuário",
+        "description": "Rota responsável por remover o usuário que está logado",
+        "tags": ["User"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "204": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "item": {
+                    "$ref": "#/components/schemas/user"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "Faz o login do usuário",
+        "description": "Rota responsável por fazer o login do usuário mediante inputs válidos",
+        "tags": ["Login"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/userLogin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkaXNwbGF5TmFtZSI6Ik1pY2hhZWwgU2NvdHQiLCJlbWFpbCI6Im1zY290dF9AZHVuZGVybWlmZmxpbi5jb20iLCJpbWFnZSI6Imh0dHA6Ly80LmJwLmJsb2dzcG90LmNvbS9fWUE1MGFkUS03dlEvUzFnZlJfNnVmcEkvQUFBQUFBQUFBQWsvMUVySkdnUldaRGcvUzQ1L2JyZXR0LnBuZyIsImlhdCI6MTY2OTU1MTkxNCwiZXhwIjoxNjY5NjM4MzE0fQ.Uo0i57Jsa3SVsvEtTtiTxjcftk6XOdOU4RjZruxzvKI"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "message": "Invalid fields"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/post": {
+      "post": {
+        "summary": "Cadastra um novo post",
+        "description": "Rota responsável por cadastrar um novo post",
+        "tags": ["Post"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createPost"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "id": 2,
+                    "title": " Again Latest updates, August 1st",
+                    "content": "The whole text for the blog post goes here in this key",
+                    "userId": 1,
+                    "updated": "2022-11-28T10:56:12.588Z",
+                    "published": "2022-11-28T10:56:12.588Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "categoryIds not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "message": "categoryIds not found"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "summary": "Busca todos os posts",
+        "description": "Rota responsável por buscar todos os posts",
+        "tags": ["Post"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "item": {
+                    "$ref": "#/components/schemas/post"
+                  },
+                  "example": [
+                    {
+                      "id": 2,
+                      "title": "Vamos que vamos",
+                      "content": "Foguete não tem ré",
+                      "userId": 1,
+                      "published": "2011-08-01T19:58:00.000Z",
+                      "updated": "2011-08-01T19:58:51.000Z",
+                      "user": {
+                        "id": 1,
+                        "displayName": "Lewis Hamilton",
+                        "email": "lewishamilton@gmail.com",
+                        "image": "https://upload.wikimedia.org/wikipedia/commons/1/18/Lewis_Hamilton_2016_Malaysia_2.jpg"
+                      },
+                      "categories": [
+                        {
+                          "id": 2,
+                          "name": "Escola",
+                          "PostCategory": {
+                            "postId": 2,
+                            "categoryId": 2
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/post/{id}": {
+      "get": {
+        "summary": "Busca um post por id",
+        "description": "Rota responsável por buscar um post pelo id",
+        "tags": ["Post"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id do post que será buscado",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "item": {
+                    "$ref": "#/components/schemas/post"
+                  },
+                  "example": {
+                    "id": 2,
+                    "title": "Vamos que vamos",
+                    "content": "Foguete não tem ré",
+                    "userId": 1,
+                    "published": "2011-08-01T19:58:00.000Z",
+                    "updated": "2011-08-01T19:58:51.000Z",
+                    "user": {
+                      "id": 1,
+                      "displayName": "Lewis Hamilton",
+                      "email": "lewishamilton@gmail.com",
+                      "image": "https://upload.wikimedia.org/wikipedia/commons/1/18/Lewis_Hamilton_2016_Malaysia_2.jpg"
+                    },
+                    "categories": [
+                      {
+                        "id": 2,
+                        "name": "Escola",
+                        "PostCategory": {
+                          "postId": 2,
+                          "categoryId": 2
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Post not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Altera um post pelo id",
+        "description": "Rota responsável por editar um post pelo id",
+        "tags": ["Post"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id do post que será alterado",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "item": {
+                    "$ref": "#/components/schemas/post"
+                  },
+                  "example": {
+                    "title": "How to become the world's best boss",
+                    "content": "Take notes from Michael Scott"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Some required fields are missing"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Post not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deleta um post pelo id",
+        "description": "Rota responsável por deletar um post pelo id",
+        "tags": ["Post"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id do post que será deletado",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content Success"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Post not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/post/search": {
+      "get": {
+        "summary": "Busca um post pelo título ou conteúdo",
+        "description": "Rota responsável por buscar um post pelo título ou conteúdo",
+        "tags": ["Post"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "título ou conteúdo do post a ser buscado",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "item": {
+                    "$ref": "#/components/schemas/post"
+                  },
+                  "example": [
+                    {
+                      "id": 1,
+                      "title": "Post do Ano",
+                      "content": "Melhor post do ano",
+                      "userId": 1,
+                      "published": "2011-08-01T19:58:00.000Z",
+                      "updated": "2011-08-01T19:58:51.000Z",
+                      "user": {
+                        "id": 1,
+                        "displayName": "Lewis Hamilton",
+                        "email": "lewishamilton@gmail.com",
+                        "image": "https://upload.wikimedia.org/wikipedia/commons/1/18/Lewis_Hamilton_2016_Malaysia_2.jpg"
+                      },
+                      "categories": [
+                        {
+                          "id": 1,
+                          "name": "Inovação"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/categories": {
+      "post": {
+        "summary": "Cadastra uma nova categoria",
+        "description": "Rota responsável por cadastrar uma nova categoria",
+        "tags": ["Category"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": "string"
+                },
+                "example": {
+                  "name": "Python"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "id": 2,
+                    "name": "Python"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Name is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "message": "Name is required"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "summary": "Busca todas as categorias",
+        "description": "Rota responsável por buscar todas as categorias",
+        "tags": ["Category"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "item": {
+                    "$ref": "#/components/schemas/category"
+                  },
+                  "example": [
+                    {
+                      "id": 1,
+                      "name": "Inovação"
+                    },
+                    {
+                      "id": 2,
+                      "name": "Python"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "user": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "displayName": "Michael Scott",
+          "email": "mscott@dundermifflin.com",
+          "password": "worldsbestboss",
+          "image": "https://www.google.com/url?sa=i&url=https%3A%2F%2Fslackmojis.com%2Femojis%2F5572-michael_scott&psig=AOvVaw1yxN_mPRdheZXdBTIoBLm7&ust=1669643691256000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCOifgsvBzvsCFQAAAAAdAAAAABAE"
+        }
+      },
+      "userLogin": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "email": "lewishamilton@gmail.com",
+          "password": "123456"
+        }
+      },
+      "post": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "number"
+          },
+          "published": {
+            "type": "string",
+            "format": "date"
+          },
+          "updated": {
+            "type": "string",
+            "format": "date"
+          },
+          "user": {
+            "type": "object",
+            "item": {
+              "$ref": "#/components/schemas/user"
+            }
+          },
+          "categories": {
+            "type": "array",
+            "item": {
+              "$ref": "#/components/schemas/categories"
+            }
+          }
+        }
+      },
+      "categories": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "postCategory": {
+            "type": "object",
+            "item": {
+              "$ref": "#/components/schemas/postCategory"
+            }
+          }
+        }
+      },
+      "postCategory": {
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "number"
+          },
+          "categoryId": {
+            "type": "number"
+          }
+        }  
+      },
+      "createPost": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "categoryIds": {
+            "type": "array"
+          }
+        },
+        "example": {
+          "title": " Again Latest updates, August 1st",
+          "content": "The whole text for the blog post goes here in this key",
+          "categoryIds": [1, 2]
+        }
+      },
+      "category": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "id": 2,
+          "name": "Python"
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
