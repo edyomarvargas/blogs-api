@@ -1,7 +1,7 @@
 # Boas-vindas ao repositório do projeto Blogs API!
 
 Neste projeto foi desenvolvido uma API e um banco de dados para a produção de conteúdo para um blog!
-A aplicação foi desenolvida utilizando Node.JS, Express e o Sequelize para fazer um CRUD de posts.
+A aplicação foi desenvolvida utilizando Node.JS, Express e o Sequelize para fazer um CRUD de posts.
 
 Esse foi um dos projetos desenvolvidos como critério de avaliação do módulo de Back-end da <a href="https://betrybe.com">Trybe<a/>.
 
