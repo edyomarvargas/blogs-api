@@ -58,4 +58,29 @@ describe('POST /login', () => {
       expect(response.body.message).to.be.equals('Invalid fields');
     });
   });
+  
+  describe('Quando login é feito com sucesso', () => {
+    let response;
+
+    before(async () => {
+      response = await chai.request(app)
+        .post('/login')
+        .send({
+          email: "lewishamilton@gmail.com",
+          password: "123456"
+        });
+    });
+
+    it('retorna código de status "200"', () => {
+      expect(response).to.have.status(200);
+    });
+
+    it('a resposta deve conter a propriedade "token" que contém o email usado no login em seu payload', () => {
+      const { token } = response.body;
+
+      const payload = jwt.decode(token);
+
+      expect(payload.email).to.be.equal('lewishamilton@gmail.com');
+    });
+  });
 });
