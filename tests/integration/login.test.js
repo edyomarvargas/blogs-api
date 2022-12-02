@@ -47,7 +47,7 @@ describe('POST /login', () => {
         .send({
           email: 'emailinexistente@email.com',
           password: 'password'
-        })
+        });
     });
 
     it('retorna código de status "400"', () => {
@@ -58,7 +58,7 @@ describe('POST /login', () => {
       expect(response.body.message).to.be.equals('Invalid fields');
     });
   });
-  
+
   describe('Quando login é feito com sucesso', () => {
     let response;
 
