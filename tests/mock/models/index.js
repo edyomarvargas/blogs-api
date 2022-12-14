@@ -29,10 +29,42 @@ const mockCreate = (Instance, data) => {
   return newData;
 };
 
+const mockFindByPk = (Instance, id) => {
+  const result = Instance.find((instance) => instance.id === Number(id));
+  if(!result) return null;
+
+  const resultWithoutPassword = {
+    ...result,
+  }
+  delete resultWithoutPassword.password;
+
+  return resultWithoutPassword;
+};
+
+const mockDestroy = (Instance, where) => {
+  if (!where) {
+    return Instance[0];
+  }
+
+  if (where.id) {
+    where.id = Number(where.id);
+  }
+
+  const options = Object.keys(where);
+  const result = Instance.find((instance) => {
+    return options.every((option) => where[option] === instance[option]);
+  });
+
+  if(!result) return null;
+  return result;
+}
+
 const User = {
   findAll: async () => Users,
   findOne: async ({ where }) => mockFindOne(Users, where),
+  findByPk: async (id) => mockFindByPk(Users, id),
   create: async (data) => mockCreate(Users, data),
+  destroy: async({ where }) => mockDestroy(Users, where),
 };
 
 module.exports = {
