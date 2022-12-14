@@ -16,10 +16,6 @@ describe('Rota /user', () => {
   let loginResponse;
 
   before(async () => {
-    sinon.stub(User, 'create').callsFake(usersMock.create);
-    sinon.stub(User, 'findAll').callsFake(usersMock.findAll);
-    sinon.stub(User, 'findOne').callsFake(usersMock.findOne);
-
     loginResponse = await chai.request(app)
       .post('/login')
       .send({
@@ -28,19 +24,20 @@ describe('Rota /user', () => {
       });
   });
 
-  after(() => {
-    User.create.restore();
-    User.findAll.restore();
-  });
-
   describe('Consulta a lista de pessoas usuárias', () => {
     let response;
 
     before(async () => {
+      sinon.stub(User, 'findAll').callsFake(usersMock.findAll);
+
       const { token } = loginResponse.body;
       response = await chai.request(app)
         .get(ENDPOINT)
         .set('authorization', token);
+    });
+
+    after(async () => {
+      User.findAll.restore();
     });
 
     it('Essa requisição deve retornar código de status 200', () => {
@@ -52,7 +49,61 @@ describe('Rota /user', () => {
     });
   });
 
+  describe('Consulta uma pessoa usuária específica', () => {
+    describe('a pessoa usuária a ser buscada existe no banco de dados', () => {
+      let response;
+
+      before(async () => {
+        sinon.stub(User, 'findByPk').callsFake(usersMock.findByPk);
+
+        const { token } = loginResponse.body;
+        response = await chai.request(app)
+          .get(`${ENDPOINT}/1`)
+          .set('authorization', token);
+      });
+
+      after(async () => {
+        User.findByPk.restore();
+      });
+
+      it('A requisição GET para a rota retorna o código de status 200', async () => {
+        expect(response).to.have.status(200);
+      });
+    });
+
+    describe('a pessoa usuária a ser buscada não existe no banco de dados', () => {
+      let response;
+
+      before(async () => {
+        sinon.stub(User, 'findByPk').callsFake(usersMock.findByPk);
+
+        const { token } = loginResponse.body;
+        response = await chai.request(app)
+          .get(`${ENDPOINT}/100`)
+          .set('authorization', token);
+      });
+
+      after(async () => {
+        User.findByPk.restore();
+      });
+
+      it('A requisição GET para a rota retorna o código de status 404', async () => {
+        expect(response).to.have.status(404);
+      });
+    });
+  });
+
   describe('Insere um novo registro', () => {
+    before(async () => {
+      sinon.stub(User, 'create').callsFake(usersMock.create);
+      sinon.stub(User, 'findOne').callsFake(usersMock.findOne);
+    });
+
+    after(async () => {
+      User.create.restore();
+      User.findOne.restore();
+    });
+
     const newUser = {
       displayName: "Ayrton Senna",
       email: 'ayrtonsenna@gmail.com',
@@ -85,6 +136,29 @@ describe('Rota /user', () => {
 
         expect(createRequest).to.have.status(201);
       });
+    });
+  });
+
+  describe('Remove a pessoa usuária logada', () => {
+    let response;
+
+    before(async () => {
+      sinon.stub(User, 'findOne').callsFake(usersMock.findOne);
+      sinon.stub(User, 'destroy').callsFake(usersMock.destroy);
+
+      const { token } = loginResponse.body;
+      response = await chai.request(app)
+        .delete(`${ENDPOINT}/me`)
+        .set('authorization', token);
+    });
+
+    after(async () => {
+      User.findOne.restore();
+      User.destroy.restore();
+    });
+
+    it('Essa requisição deve retornar código de status 204', () => {
+      expect(response).to.have.status(204);
     });
   });
 });
