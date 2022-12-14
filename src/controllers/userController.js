@@ -47,14 +47,14 @@ const findByPk = async (req, res) => {
   }
 };
 
-const remove = async (req, res) => {
+const destroy = async (req, res) => {
   try {
     const token = getCorrectTokenFormat(req.headers.authorization);
     const { email: userEmail } = tokenHelper.verifyToken(token);
   
     const userData = await userService.getUserByEmail(userEmail);
-  
-    await userService.remove(userData.dataValues.id);
+    
+    await userService.destroy(userData.id);
   
     return res.status(204).end();
   } catch (error) {
@@ -67,5 +67,5 @@ module.exports = {
   create,
   getAll,
   findByPk,
-  remove,
+  destroy,
 };
