@@ -1,4 +1,6 @@
 const Users = require('./Users.json');
+const Categories = require('./Categories.json');
+const BlogPosts = require('./Posts.json');
 
 const mockFindOne = (Instance, where) => {
   if (!where) {
@@ -59,6 +61,25 @@ const mockDestroy = (Instance, where) => {
   return result;
 }
 
+const mockUpdate = (Instance, fields, { where }) => {
+  console.log(Instance, fields);
+  if (!where) return Instance[0];
+
+  if (where.id) {
+    where.id = Number(where.id);
+  } 
+
+  const options = Object.keys(where);
+  const result = Instance.find((instance) => {
+    return options.every((option) => where[option] === instance[option]);
+  });
+  if(!result) return null;
+
+  const editFields = Object.keys(fields);
+  editFields.forEach((field) => result[field] = fields[field]);
+  return result;
+};
+
 const User = {
   findAll: async () => Users,
   findOne: async ({ where }) => mockFindOne(Users, where),
@@ -67,6 +88,20 @@ const User = {
   destroy: async({ where }) => mockDestroy(Users, where),
 };
 
+const Category = {
+  findAll: async () => Categories,
+  create: async (data) => mockCreate(Categories, data),
+}
+
+const BlogPost = {
+  findAll: async () => BlogPosts,
+  findByPk: async (id) => mockFindByPk(BlogPosts, id),
+  create: async (data) => mockCreate(BlogPosts, data),
+  update: async (fields, { where }) => mockUpdate(BlogPosts, fields, where),
+}
+
 module.exports = {
   User,
+  Category,
+  BlogPost,
 };
