@@ -44,8 +44,8 @@ describe('Rota /post', () => {
       expect(response).to.have.status(200);
     });
 
-    it('Traz uma lista inicial contendo dois registros de posts', () => {
-      expect(response.body).to.have.length(2);
+    it('Traz uma lista inicial contendo três registros de posts', () => {
+      expect(response.body).to.have.length(3);
     });
   });
 
@@ -167,7 +167,7 @@ describe('Rota /post', () => {
         BlogPost.create.restore();
       });
 
-      it('A requisição POST para a rota retorna o código de status 400', async () => {
+      it('A requisição POST para a rota retorna o código de status 401', async () => {
         expect(response).to.have.status(400);
       });
 
@@ -178,25 +178,81 @@ describe('Rota /post', () => {
   });
 
   describe('Remove o post', () => {
-    let response;
+    describe('o post é removido corretamente', () => {
+      let response;
 
-    before(async () => {
-      sinon.stub(BlogPost, 'findByPk').callsFake(blogPostsMock.findByPk);
-      sinon.stub(BlogPost, 'destroy').callsFake(blogPostsMock.destroy);
+      before(async () => {
+        sinon.stub(BlogPost, 'findByPk').callsFake(blogPostsMock.findByPk);
+        sinon.stub(BlogPost, 'destroy').callsFake(blogPostsMock.destroy);
 
-      const { token } = loginResponse.body;
-      response = await chai.request(app)
-        .delete(`${ENDPOINT}/1`)
-        .set('authorization', token);
+        const { token } = loginResponse.body;
+        response = await chai.request(app)
+          .delete(`${ENDPOINT}/1`)
+          .set('authorization', token);
+      });
+
+      after(async () => {
+        BlogPost.findByPk.restore();
+        BlogPost.destroy.restore();
+      });
+
+      it('Essa requisição deve retornar código de status 204', () => {
+        expect(response).to.have.status(204);
+      });
     });
 
-    after(async () => {
-      BlogPost.findByPk.restore();
-      BlogPost.destroy.restore();
+    describe('a pessoa usuária tenta remover um post que não é dela', () => {
+      let response;
+
+      before(async () => {
+        sinon.stub(BlogPost, 'findByPk').callsFake(blogPostsMock.findByPk);
+        sinon.stub(BlogPost, 'destroy').callsFake(blogPostsMock.destroy);
+
+        const { token } = loginResponse.body;
+        response = await chai.request(app)
+          .delete(`${ENDPOINT}/3`)
+          .set('authorization', token);
+      });
+
+      after(async () => {
+        BlogPost.findByPk.restore();
+        BlogPost.destroy.restore();
+      });
+
+      it('Essa requisição deve retornar código de status 401', () => {
+        expect(response).to.have.status(401);
+      });
+
+      it('Essa requisição deve retornar a mensagem "Unauthorized user"', () => {
+        expect(response.body.message).to.be.equal('Unauthorized user');
+      });
     });
 
-    it('Essa requisição deve retornar código de status 204', () => {
-      expect(response).to.have.status(204);
+    describe('a pessoa usuária tenta remover um post inexistente', () => {
+      let response;
+
+      before(async () => {
+        sinon.stub(BlogPost, 'findByPk').callsFake(blogPostsMock.findByPk);
+        sinon.stub(BlogPost, 'destroy').callsFake(blogPostsMock.destroy);
+
+        const { token } = loginResponse.body;
+        response = await chai.request(app)
+          .delete(`${ENDPOINT}/100`)
+          .set('authorization', token);
+      });
+
+      after(async () => {
+        BlogPost.findByPk.restore();
+        BlogPost.destroy.restore();
+      });
+
+      it('Essa requisição deve retornar código de status 404', () => {
+        expect(response).to.have.status(404);
+      });
+
+      it('Essa requisição deve retornar a mensagem "Post does not exist"', () => {
+        expect(response.body.message).to.be.equal('Post does not exist');
+      });
     });
   });
 
@@ -259,6 +315,39 @@ describe('Rota /post', () => {
 
       it('Essa requisição deve retornar a seguinte mensagem "Some required fields are missing"', () => {
         expect(response.body.message).to.be.equal("Some required fields are missing");
+      });
+    });
+
+    describe('A pessoa usuária tenta atualizar um post que não é dela', () => {
+      let response;
+
+      const validNewContent = {
+        title: 'Título atualizado',
+        content: 'Novo conteúdo'
+      }
+
+      before(async () => {
+        sinon.stub(BlogPost, 'update').callsFake(blogPostsMock.update);
+        sinon.stub(BlogPost, 'findByPk').callsFake(blogPostsMock.findByPk);
+
+        const { token } = loginResponse.body;
+        response = await chai.request(app)
+          .put(`${ENDPOINT}/3`)
+          .set('authorization', token)
+          .send(validNewContent);
+      });
+
+      after(async () => {
+        BlogPost.update.restore();
+        BlogPost.findByPk.restore();
+      });
+
+      it('Essa requisição deve retornar código de status 401', () => {
+        expect(response).to.have.status(401);
+      });
+
+      it('Essa requisição deve retornar a seguinte mensagem "Unauthorized user"', () => {
+        expect(response.body.message).to.be.equal("Unauthorized user");
       });
     });
   });
