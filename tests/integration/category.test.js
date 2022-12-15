@@ -49,7 +49,7 @@ describe('Rota /categories', () => {
     });
   });
 
-  describe('Insere uma nova categoria', () => {
+  describe('Insere uma nova categoria corretamente', () => {
     const newCategory = {
       name: 'JavaScript'
     };
@@ -70,6 +70,31 @@ describe('Rota /categories', () => {
 
     it('A requisição POST para a rota retorna o código de status 201', async () => {
       expect(response).to.have.status(201);
+    });
+  });
+
+  describe('Insere uma nova categoria sem nome', () => {
+    const invalidCategory = {};
+
+    before(async () => {
+      sinon.stub(Category, 'create').callsFake(categoriesMock.create);
+
+      const { token } = loginResponse.body;
+      response = await chai.request(app)
+        .post(ENDPOINT)
+        .set('authorization', token)
+        .send(invalidCategory);
+    });
+
+    after(async () => {
+      Category.create.restore();
+    });
+
+    it('A requisição POST para a rota retorna o código de status 400', async () => {
+      expect(response).to.have.status(400);
+    });
+    it('A requisição POST para a rota retorna a mensagem "name" is required', async () => {
+      expect(response.body.message).to.be.equal('"name" is required');
     });
   });
 });
