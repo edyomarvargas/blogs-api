@@ -139,6 +139,37 @@ describe('Rota /user', () => {
     });
   });
 
+  describe('Insere um novo registro sem todas as informações necessárias', () => {
+    let response;
+    before(async () => {
+      sinon.stub(User, 'create').callsFake(usersMock.create);
+      sinon.stub(User, 'findOne').callsFake(usersMock.findOne);
+
+      response = await chai.request(app)
+      .post(ENDPOINT)
+      .send(newInvalidUser);
+    });
+
+    after(async () => {
+      User.create.restore();
+      User.findOne.restore();
+    });
+
+    const newInvalidUser = {
+      displayName: "Ayrton Senna",
+      password: '123456',
+      image: 'https://lobopopart.com.br/wp-content/uploads/2016/09/Ayrton-Senna-Brasil-128x128.jpg',
+    };
+
+    it('A requisição POST para a rota retorna o código de status 400', async () => {
+      expect(response).to.have.status(400);
+    });
+
+    it('A requisição POST para a rota retorna a mensagem "email" is required', async () => {
+      expect(response.body.message).to.be.equal('"email" is required');
+    });
+  });
+
   describe('Remove a pessoa usuária logada', () => {
     let response;
 
