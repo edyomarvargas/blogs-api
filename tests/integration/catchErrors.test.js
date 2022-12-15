@@ -175,57 +175,63 @@ describe.only('Testa se as funções lançam erros', () => {
       });
     });
     
-  //   describe('create throws an error', function () {
-  //     const newPost = {
-  //       title: 'Latest updates, August 1st',
-  //       content: 'The whole text for the blog post goes here in this key',
-  //       categoryIds: [1, 2],
-  //     };
+    describe('lança um erro ao criar um novo post', () => {
+      const newPost = {
+        title: 'Again Latest updates, August 1st',
+        content: 'The whole text for the blog post goes here in this key',
+        categoryIds: [1, 2],
+      };
   
-  //     before(async function () {
-  //       const stubThrows = { message: INTERNAL_ERROR_MSG };
-  //       sinon.stub(BlogPost, 'create').throws(stubThrows);
+      before(async () => {
+        const stubThrows = { message: INTERNAL_ERROR_MSG };
+        sinon.stub(BlogPost, 'create').throws(stubThrows);
   
-  //       response = await chai.request(app)
-  //       .post('/post')
-  //       .send(newPost)
-  //       .set('authorization', loginResponse.body.token);
-  //     });
+        const { token } = loginResponse.body;
+        response = await chai.request(app)
+        .post('/post')
+        .send(newPost)
+        .set('authorization', token);
+      });
   
-  //     after(function () { BlogPost.create.restore(); });
+      after(() => {
+        BlogPost.create.restore();
+      });
   
-  //     it('A requisição deve retornar código de status 500', function () {
-  //       expect(response).to.have.status(500);
-  //     });
-  //     it('A requisição deve retornar a mensagem "Internal Server Error"', function () {
-  //       expect(response.body.message).to.be.equals(INTERNAL_ERROR_MSG);
-  //     });
-  //   });
+      it('A requisição deve retornar código de status 500', () => {
+        expect(response).to.have.status(500);
+      });
+      it('A requisição deve retornar a mensagem "Internal Server Error"', () => {
+        expect(response.body.message).to.be.equals(INTERNAL_ERROR_MSG);
+      });
+    });
   
-  //   describe('update throws an error', function () {
-  //     const editPost = {
-  //       title: 'Latest updates, August 1st',
-  //       content: 'The whole text for the blog post goes here in this key',
-  //     };
+    describe('lança um erro ao atualizar um post', () => {
+      const newPostContent = {
+        title: 'Novo título',
+        content: 'Novo conteúdo',
+      };
   
-  //     before(async function () {
-  //       const stubThrows = { message: INTERNAL_ERROR_MSG };
-  //       sinon.stub(BlogPost, 'update').throws(stubThrows);
+      before(async () => {
+        const stubThrows = { message: INTERNAL_ERROR_MSG };
+        sinon.stub(BlogPost, 'update').throws(stubThrows);
   
-  //       response = await chai.request(app)
-  //       .put('/post/1')
-  //       .send(editPost)
-  //       .set('authorization', loginResponse.body.token);
-  //     });
+        const { token } = loginResponse.body;
+        response = await chai.request(app)
+        .put('/post/2')
+        .send(newPostContent)
+        .set('authorization', token);
+      });
   
-  //     after(function () { BlogPost.update.restore(); });
+      after(() => {
+        BlogPost.update.restore();
+      });
   
-  //     it('A requisição deve retornar código de status 500', function () {
-  //       expect(response).to.have.status(500);
-  //     });
-  //     it('A requisição deve retornar a mensagem "Internal Server Error"', function () {
-  //       expect(response.body.message).to.be.equals(INTERNAL_ERROR_MSG);
-  //     });
-  //   });
+      it('A requisição deve retornar código de status 500', () => {
+        expect(response).to.have.status(500);
+      });
+      it('A requisição deve retornar a mensagem "Internal Server Error"', () => {
+        expect(response.body.message).to.be.equals(INTERNAL_ERROR_MSG);
+      });
+    });
   });
 });
