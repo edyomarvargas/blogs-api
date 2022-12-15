@@ -46,5 +46,30 @@
 				}
 			}
 		]
+	},
+	{
+		"id": 3,
+		"title": "Linguagens de programação",
+		"content": "JavaScript, Python, Java, C#...",
+		"userId": 2,
+		"published": "2011-08-01T19:58:00.000Z",
+		"updated": "2011-08-01T19:58:51.000Z",
+		"user": {
+			"id": 2,
+			"displayName": "Michael Schumacher",
+			"email": "MichaelSchumacher@gmail.com",
+			"password": "123456",
+			"image": "https://sportbuzz.uol.com.br/media/_versions/gettyimages-52491565_widelg.jpg"
+		},
+		"categories": [
+			{
+				"id": 2,
+				"name": "Escola",
+				"PostCategory": {
+					"postId": 3,
+					"categoryId": 2
+				}
+			}
+		]
 	}
 ]
