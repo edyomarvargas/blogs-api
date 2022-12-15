@@ -233,6 +233,29 @@ describe('Testa se as funções lançam erros', () => {
         expect(response.body.message).to.be.equals(INTERNAL_ERROR_MSG);
       });
     });
+
+    describe('lança um erro ao remover um post', () => {
+      before(async () => {
+        const stubThrows = { message: INTERNAL_ERROR_MSG };
+        sinon.stub(BlogPost, 'destroy').throws(stubThrows);
+
+        const { token } = loginResponse.body;
+        response = await chai.request(app)
+        .delete('/post/2')
+        .set('authorization', token);
+      });
+
+      after(() => {
+        BlogPost.destroy.restore();
+      });
+
+      it('A requisição deve retornar código de status 500', () => {
+        expect(response).to.have.status(500);
+      });
+      it('A requisição deve retornar a mensagem "Internal Server Error"', () => {
+        expect(response.body.message).to.be.equals(INTERNAL_ERROR_MSG);
+      });
+    });
   });
 
   describe('Rota /category', () => {
