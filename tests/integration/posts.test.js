@@ -49,7 +49,7 @@ describe('Rota /post', () => {
     });
   });
 
-  describe('Consulta um post específico', () => {
+  describe('Consulta um post pelo id', () => {
     describe('o post a ser buscado existe no banco de dados', () => {
       let response;
 
@@ -93,31 +93,87 @@ describe('Rota /post', () => {
     });
   });
 
+  describe('Consulta um post pela query', () => {
+    describe('o post a ser buscado existe no banco de dados', () => {
+      let response;
+
+      before(async () => {
+        sinon.stub(BlogPost, 'findAll').callsFake(blogPostsMock.search);
+
+        const { token } = loginResponse.body;
+        response = await chai.request(app)
+          .get(`${ENDPOINT}/search?q=vamos`)
+          .set('authorization', token);
+      });
+
+      after(async () => {
+        BlogPost.findAll.restore();
+      });
+
+      it('A requisição GET para a rota retorna o código de status 200', async () => {
+        expect(response).to.have.status(200);
+      });
+    });
+  });
+
   describe('Insere um novo post', () => {
-    let response;
+    describe('o post a ser inserido possui todos os campos obrigatórios', () => {
+      let response;
 
-    const newBlogPost = {
-      title: 'Again Latest updates, August 1st',
-      content: 'The whole text for the blog post goes here in this key',
-      categoryIds: [1, 2],
-    }
+      const newBlogPost = {
+        title: 'Again Latest updates, August 1st',
+        content: 'The whole text for the blog post goes here in this key',
+        categoryIds: [1, 2],
+      }
 
-    before(async () => {
-      sinon.stub(BlogPost, 'create').callsFake(blogPostsMock.create);
+      before(async () => {
+        sinon.stub(BlogPost, 'create').callsFake(blogPostsMock.create);
 
-      const { token } = loginResponse.body;
-      response = await chai.request(app)
-        .post(ENDPOINT)
-        .set('authorization', token)
-        .send(newBlogPost);
+        const { token } = loginResponse.body;
+        response = await chai.request(app)
+          .post(ENDPOINT)
+          .set('authorization', token)
+          .send(newBlogPost);
+      });
+
+      after(async () => {
+        BlogPost.create.restore();
+      });
+
+      it('A requisição POST para a rota retorna o código de status 201', async () => {
+        expect(response).to.have.status(201);
+      });
     });
 
-    after(async () => {
-      BlogPost.create.restore();
-    });
+    describe('o post a ser inserido não possui todos os campos obrigatórios', () => {
+      let response;
 
-    it('A requisição POST para a rota retorna o código de status 201', async () => {
-      expect(response).to.have.status(201);
+      const newBlogPost = {
+        title: 'Again Latest updates, August 1st',
+        categoryIds: [1, 2],
+      }
+
+      before(async () => {
+        sinon.stub(BlogPost, 'create').callsFake(blogPostsMock.create);
+
+        const { token } = loginResponse.body;
+        response = await chai.request(app)
+          .post(ENDPOINT)
+          .set('authorization', token)
+          .send(newBlogPost);
+      });
+
+      after(async () => {
+        BlogPost.create.restore();
+      });
+
+      it('A requisição POST para a rota retorna o código de status 400', async () => {
+        expect(response).to.have.status(400);
+      });
+
+      it('A requisição POST para a rota retorna a mensagem "Some required fields are missing"', async () => {
+        expect(response.body.message).to.be.equal('Some required fields are missing');
+      });
     });
   });
 
@@ -152,18 +208,18 @@ describe('Rota /post', () => {
         title: 'Título atualizado',
         content: 'Novo conteúdo'
       }
-  
+
       before(async () => {
         sinon.stub(BlogPost, 'update').callsFake(blogPostsMock.update);
         sinon.stub(BlogPost, 'findByPk').callsFake(blogPostsMock.findByPk);
-  
+
         const { token } = loginResponse.body;
         response = await chai.request(app)
           .put(`${ENDPOINT}/1`)
           .set('authorization', token)
           .send(validNewContent);
       });
-  
+
       after(async () => {
         BlogPost.update.restore();
         BlogPost.findByPk.restore();
@@ -180,18 +236,18 @@ describe('Rota /post', () => {
       const invalidNewContent = {
         title: 'Título atualizado',
       }
-  
+
       before(async () => {
         sinon.stub(BlogPost, 'update').callsFake(blogPostsMock.update);
         sinon.stub(BlogPost, 'findByPk').callsFake(blogPostsMock.findByPk);
-  
+
         const { token } = loginResponse.body;
         response = await chai.request(app)
           .put(`${ENDPOINT}/1`)
           .set('authorization', token)
           .send(invalidNewContent);
       });
-  
+
       after(async () => {
         BlogPost.update.restore();
         BlogPost.findByPk.restore();
