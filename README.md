@@ -50,6 +50,8 @@ Posteriormente, clone o repositório e execute os seguintes comandos na raiz do 
 ## Testes
 A aplicação foi testada através de testes de integração usando as ferramentas Chai e Sinon.
   
+<img src="src/images/test-coverage.png" width="600">
+  
 Para rodar todos os testes:
   ```js
     npm run test
