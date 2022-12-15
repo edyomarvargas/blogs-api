@@ -62,7 +62,6 @@ const mockDestroy = (Instance, where) => {
 }
 
 const mockUpdate = (Instance, fields, { where }) => {
-  console.log(Instance, fields);
   if (!where) return Instance[0];
 
   if (where.id) {
@@ -77,6 +76,16 @@ const mockUpdate = (Instance, fields, { where }) => {
 
   const editFields = Object.keys(fields);
   editFields.forEach((field) => result[field] = fields[field]);
+  return result;
+};
+
+const mockSearch = (Instance, query) => {
+  if (!query) return Instance;
+
+  const result = Instance.filter((instance) => {
+    const { title, content } = instance;
+    return title.includes(query) || content.includes(query);
+  });
   return result;
 };
 
@@ -98,6 +107,7 @@ const BlogPost = {
   findByPk: async (id) => mockFindByPk(BlogPosts, id),
   create: async (data) => mockCreate(BlogPosts, data),
   update: async (fields, { where }) => mockUpdate(BlogPosts, fields, where),
+  search: async (query) => mockSearch(BlogPosts, query),
 }
 
 module.exports = {
