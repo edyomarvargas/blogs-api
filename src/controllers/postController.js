@@ -22,7 +22,6 @@ const getAll = async (req, res) => {
 const create = async (req, res) => {
   try {
     const { title, content, categoryIds } = req.body;
-    console.log('aqui', req.headers.authorization);
   
     const token = getCorrectTokenFormat(req.headers.authorization);
     const payload = verifyToken(token);
