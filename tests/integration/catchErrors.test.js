@@ -287,4 +287,33 @@ describe('Testa se as funções lançam erros', () => {
       });
     });
   });
+
+  describe('Rota /login', () => {
+    describe('lança um erro ao fazer login', () => {
+      const loginInfo = {
+        email: 'lewishamilton@gmail.com',
+        password: '123456'
+      };
+  
+      before(async () => {
+        const stubThrows = { message: INTERNAL_ERROR_MSG };
+        sinon.stub(User, 'findOne').throws(stubThrows);
+  
+        response = await chai.request(app)
+        .post('/login')
+        .send(loginInfo)
+      });
+  
+      after(() => {
+        User.findOne.restore();
+      });
+  
+      it('A requisição deve retornar código de status 500', () => {
+        expect(response).to.have.status(500);
+      });
+      it('A requisição deve retornar a mensagem "Internal Server Error"', () => {
+        expect(response.body.message).to.be.equals(INTERNAL_ERROR_MSG);
+      });
+    });
+  });
 });
