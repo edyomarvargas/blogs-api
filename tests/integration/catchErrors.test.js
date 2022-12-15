@@ -5,6 +5,7 @@ const chaiHttp = require('chai-http');
 const app = require('../../src/api');
 
 const { User, BlogPost, Category } = require('../../src/database/models');
+const authMiddleware = require('../../src/middlewares/authentication');
 
 chai.use(chaiHttp);
 
@@ -247,6 +248,29 @@ describe('Testa se as funções lançam erros', () => {
 
       after(() => {
         BlogPost.destroy.restore();
+      });
+
+      it('A requisição deve retornar código de status 500', () => {
+        expect(response).to.have.status(500);
+      });
+      it('A requisição deve retornar a mensagem "Internal Server Error"', () => {
+        expect(response.body.message).to.be.equals(INTERNAL_ERROR_MSG);
+      });
+    });
+
+    describe('lança um erro ao buscar um post com a query', () => {
+      before(async () => {
+        const stubThrows = { message: INTERNAL_ERROR_MSG };
+        sinon.stub(BlogPost, 'findAll').throws(stubThrows);
+
+        const { token } = loginResponse.body;
+        response = await chai.request(app)
+        .get('/post/search?q=latest')
+        .set('authorization', token);
+      });
+
+      after(() => {
+        BlogPost.findAll.restore();
       });
 
       it('A requisição deve retornar código de status 500', () => {
