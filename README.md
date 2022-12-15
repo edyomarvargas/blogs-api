@@ -11,6 +11,7 @@ Esse foi um dos projetos desenvolvidos como critério de avaliação do módulo 
   - [Sobre a aplicação](#sobre-a-aplicação)
   - [Tecnologias e bibliotecas utilizadas](#tecnologias-e-bibliotecas-utilizadas) 
   - [Instalando e rodando a aplicação](#instalando-e-rodando-a-aplicação) 
+  - [Testes](#testes)
   - [Documentação](#documentação)
   - [Código limpo](#código-limpo)
   
@@ -44,6 +45,19 @@ Posteriormente, clone o repositório e execute os seguintes comandos na raiz do 
     docker exec -it blogs_api bash
     npm install
     npm run dev
+  ```
+  
+## Testes
+A aplicação foi testada através de testes de integração usando as ferramentas Chai e Sinon.
+  
+Para rodar todos os testes:
+  ```js
+    npm run test
+  ```
+
+Para verificar a cobertura dos testes:
+  ```js
+    npm run test:coverage
   ```
   
 ## Documentação
