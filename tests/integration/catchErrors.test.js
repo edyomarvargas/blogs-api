@@ -4,13 +4,13 @@ const chaiHttp = require('chai-http');
 
 const app = require('../../src/api');
 
-const { User, BlogPost } = require('../../src/database/models');
+const { User, BlogPost, Category } = require('../../src/database/models');
 
 chai.use(chaiHttp);
 
 const { expect } = chai;
 
-describe.only('Testa se as funções lançam erros', () => {
+describe('Testa se as funções lançam erros', () => {
   const INTERNAL_ERROR_MSG = 'Internal Server Error';
 
   let response;
@@ -224,6 +224,59 @@ describe.only('Testa se as funções lançam erros', () => {
   
       after(() => {
         BlogPost.update.restore();
+      });
+  
+      it('A requisição deve retornar código de status 500', () => {
+        expect(response).to.have.status(500);
+      });
+      it('A requisição deve retornar a mensagem "Internal Server Error"', () => {
+        expect(response.body.message).to.be.equals(INTERNAL_ERROR_MSG);
+      });
+    });
+  });
+
+  describe('Rota /category', () => {
+    describe('lança um erro ao buscar todas as categorias', () => {
+      before(async () => {
+        const stubThrows = { message: INTERNAL_ERROR_MSG };
+        sinon.stub(Category, 'findAll').throws(stubThrows);
+
+        const { token } = loginResponse.body;
+        response = await chai.request(app)
+        .get('/categories')
+        .set('authorization', token);
+      });
+
+      after(() => { 
+        Category.findAll.restore();
+      });
+
+      it('A requisição deve retornar código de status 500', () => {
+        expect(response).to.have.status(500);
+      });
+      it('A requisição deve retornar a mensagem "Internal Server Error"', () => {
+        expect(response.body.message).to.be.equals(INTERNAL_ERROR_MSG);
+      });
+    });
+
+    describe('lança um erro ao criar uma nova categoria', () => {
+      const newCategory = {
+        name: 'JavaScript',
+      };
+  
+      before(async () => {
+        const stubThrows = { message: INTERNAL_ERROR_MSG };
+        sinon.stub(Category, 'create').throws(stubThrows);
+  
+        const { token } = loginResponse.body;
+        response = await chai.request(app)
+        .post('/categories')
+        .send(newCategory)
+        .set('authorization', token);
+      });
+  
+      after(() => {
+        Category.create.restore();
       });
   
       it('A requisição deve retornar código de status 500', () => {
