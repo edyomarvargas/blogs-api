@@ -8,7 +8,7 @@ const validateUser = async (postId, userData) => {
   const post = await postService.findByPk(postId);
   if (!post) return null;
 
-  const authorId = post.dataValues.userId;
+  const authorId = post.userId;
 
   let isUserValid = false;
 
